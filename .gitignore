@@ -1,0 +1,9 @@
+
+.vscode
+.idea
+
+.env
+
+*.out
+
+.DS_Store
