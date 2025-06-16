@@ -339,7 +339,7 @@ func Zip[A, B any](as Seq[A], bs Seq[B]) Seq2[A, B] {
 	}
 }
 
-// Zip combines the elements of the two specified Seq instances into a Seq2 that contains
+// ZipToShortest combines the elements of the two specified Seq instances into a Seq2 that contains
 // the pair-wise tuples. If the two sequences are not of the same length then the Seq2 will
 // stop yielding tuple elements once the shortest Seq is exhausted.
 func ZipToShortest[A, B any](as Seq[A], bs Seq[B]) Seq2[A, B] {
