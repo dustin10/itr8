@@ -69,6 +69,31 @@ func Test_FlatMap2(t *testing.T) {
 	}
 }
 
+func Test_Pull2(t *testing.T) {
+	as := itr8.All([]int{1, 2, 3})
+	bs := itr8.All([]string{"a", "b", "c"})
+
+	seq := itr8.ZipToShortest(as, bs)
+
+	next, stop := itr8.Pull2(seq)
+	defer stop()
+
+	a, b, ok := next()
+	assert.True(t, ok)
+	assert.Equal(t, 1, a)
+	assert.Equal(t, "a", b)
+
+	a, b, ok = next()
+	assert.True(t, ok)
+	assert.Equal(t, 2, a)
+	assert.Equal(t, "b", b)
+
+	stop()
+
+	_, _, ok = next()
+	assert.False(t, ok)
+}
+
 func Test_Map2(t *testing.T) {
 	f := func(a int, b string) string {
 		return fmt.Sprintf("%d: %s", a, b)

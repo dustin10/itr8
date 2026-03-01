@@ -116,7 +116,7 @@ func (s *Set[A]) All() itr8.Seq[A] {
 	return itr8.Seq[A](maps.Keys(s.elems))
 }
 
-// String returns a string representation of the Maybe.
+// String returns a string representation of the Set.
 func (s Set[A]) String() string {
 	f := func(a A) string {
 		return fmt.Sprintf("%v", a)
@@ -139,7 +139,7 @@ func (s Set[A]) MarshalJSON() ([]byte, error) {
 	return bytes, nil
 }
 
-// UnmarshalJSON converts the JSON bytes to the value contained in the Maybe if present.
+// UnmarshalJSON converts the JSON bytes to the elements contained in the Set.
 func (s *Set[A]) UnmarshalJSON(data []byte) error {
 	as := make([]A, 0)
 
@@ -147,6 +147,8 @@ func (s *Set[A]) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return fmt.Errorf("unmarshal JSON to Set: %w", err)
 	}
+
+	s.Clear()
 
 	for _, a := range as {
 		s.Add(a)

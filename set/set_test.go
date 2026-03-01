@@ -1,6 +1,7 @@
 package set_test
 
 import (
+	"encoding/json"
 	"slices"
 	"testing"
 
@@ -161,8 +162,9 @@ func Test_Set_Clear(t *testing.T) {
 	s.Add(2)
 	s.Add(3)
 
-	s.Clear()
+	removed := s.Clear()
 
+	assert.Equal(t, 3, removed)
 	assert.Equal(t, 0, s.Len())
 }
 
@@ -247,4 +249,68 @@ func Test_Map(t *testing.T) {
 			}
 		})
 	}
+}
+
+func Test_Set_String(t *testing.T) {
+	s := set.New[int]()
+	assert.Equal(t, "[]", s.String())
+
+	s.Add(1)
+	assert.Equal(t, "[1]", s.String())
+}
+
+func Test_Set_MarshalJSON(t *testing.T) {
+	tests := map[string]struct {
+		values []int
+	}{
+		"empty":     {values: []int{}},
+		"non-empty": {values: []int{1, 2, 3}},
+	}
+
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) {
+			s := set.FromSlice(test.values)
+
+			data, err := json.Marshal(s)
+
+			assert.Nil(t, err)
+
+			var got []int
+			assert.Nil(t, json.Unmarshal(data, &got))
+			assert.Equal(t, len(test.values), len(got))
+			for _, v := range test.values {
+				assert.True(t, slices.Contains(got, v))
+			}
+		})
+	}
+}
+
+func Test_Set_UnmarshalJSON(t *testing.T) {
+	t.Run("populates from JSON", func(t *testing.T) {
+		var s set.Set[int]
+
+		assert.Nil(t, json.Unmarshal([]byte("[1,2,3]"), &s))
+		assert.Equal(t, 3, s.Len())
+		assert.True(t, s.Contains(1))
+		assert.True(t, s.Contains(2))
+		assert.True(t, s.Contains(3))
+	})
+
+	t.Run("replaces existing elements", func(t *testing.T) {
+		s := set.FromSlice([]int{4, 5, 6})
+
+		assert.Nil(t, json.Unmarshal([]byte("[1,2,3]"), &s))
+		assert.Equal(t, 3, s.Len())
+		assert.True(t, s.Contains(1))
+		assert.True(t, s.Contains(2))
+		assert.True(t, s.Contains(3))
+		assert.False(t, s.Contains(4))
+		assert.False(t, s.Contains(5))
+		assert.False(t, s.Contains(6))
+	})
+
+	t.Run("invalid JSON returns error", func(t *testing.T) {
+		var s set.Set[int]
+		assert.NotNil(t, json.Unmarshal([]byte("not-json"), &s))
+	})
 }

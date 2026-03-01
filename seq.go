@@ -69,9 +69,9 @@ func (s Seq[A]) Count() int {
 // Distinct takes the elements from the specified Seq and returns a new Seq that will only
 // yield the distince values from the original one.
 func Distinct[A comparable](seq Seq[A]) Seq[A] {
-	set := make(map[A]struct{}, 0)
-
 	return func(yield func(A) bool) {
+		set := make(map[A]struct{}, 0)
+
 		for a := range seq {
 			_, exists := set[a]
 			if exists {
@@ -169,8 +169,8 @@ func Generate[A any](f fn.Factory[A]) Seq[A] {
 // The caller must sepcify the the initial value to be passed in for the first invocation
 // of the function.
 func GenerateWithLast[A any](initial A, f fn.Function[A, A]) Seq[A] {
-	last := initial
 	return func(yield func(A) bool) {
+		last := initial
 		for {
 			last = f(last)
 			if !yield(last) {
@@ -264,8 +264,8 @@ func Reduce[A, B any](seq Seq[A], identity B, f fn.Function2[A, B, B]) B {
 // Skip returns a Seq consisting of the remaining elements of the existing Seq after discarding
 // the first n elements.
 func (s Seq[A]) Skip(n int) Seq[A] {
-	skipped := 0
 	return func(yield func(A) bool) {
+		skipped := 0
 		for a := range s {
 			if skipped < n {
 				skipped = skipped + 1
@@ -279,7 +279,7 @@ func (s Seq[A]) Skip(n int) Seq[A] {
 	}
 }
 
-// TakeUntil returns a Seq that produces elements as long as the fn.Predicate returns true.
+// TakeWhile returns a Seq that produces elements as long as the fn.Predicate returns true.
 // Elements will stop being produced when the first one fails.
 func (s Seq[A]) TakeWhile(p fn.Predicate[A]) Seq[A] {
 	return func(yield func(A) bool) {

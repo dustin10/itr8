@@ -69,7 +69,7 @@ func (m Maybe[A]) Filter(p fn.Predicate[A]) Maybe[A] {
 // Maybe then it will cause a panic.
 func (m Maybe[A]) Get() A {
 	if !m.present {
-		panic("Get() called with no value is present")
+		panic("Get() called when no value is present")
 	}
 
 	return m.value

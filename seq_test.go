@@ -132,6 +132,15 @@ func Test_Distinct(t *testing.T) {
 	}
 }
 
+func Test_Distinct_MultipleIterations(t *testing.T) {
+	s := itr8.Distinct(itr8.All([]int{1, 1, 2, 2, 4}))
+
+	expected := []int{1, 2, 4}
+
+	assert.True(t, slices.Equal(expected, consumeSeq(s)))
+	assert.True(t, slices.Equal(expected, consumeSeq(s)))
+}
+
 type TestSink []int
 
 func (s *TestSink) Add(n int) {
@@ -295,6 +304,17 @@ func Test_GenerateWithLast(t *testing.T) {
 	assert.Equal(t, 10, count)
 }
 
+func Test_GenerateWithLast_MultipleIterations(t *testing.T) {
+	s := itr8.GenerateWithLast(0, func(n int) int {
+		return n + 1
+	})
+
+	first := itr8.Seq[int](s).Limit(3).ToSlice()
+	second := itr8.Seq[int](s).Limit(3).ToSlice()
+
+	assert.True(t, slices.Equal(first, second))
+}
+
 func Test_Seq_Limit(t *testing.T) {
 	tests := map[string]struct {
 		values []int
@@ -450,6 +470,15 @@ func Test_Seq_Skip(t *testing.T) {
 			assert.True(t, slices.Equal(test.expected, res))
 		})
 	}
+}
+
+func Test_Seq_Skip_MultipleIterations(t *testing.T) {
+	s := itr8.All([]int{1, 2, 3, 4}).Skip(2)
+
+	expected := []int{3, 4}
+
+	assert.True(t, slices.Equal(expected, consumeSeq(s)))
+	assert.True(t, slices.Equal(expected, consumeSeq(s)))
 }
 
 func Test_Seq_TakeWhile(t *testing.T) {

@@ -50,8 +50,8 @@ func Test_FromString(t *testing.T) {
 		value  string
 		expect bool
 	}{
-		"valid pointer": {value: "value", expect: true},
-		"nil pointer":   {value: "", expect: false},
+		"non-empty string": {value: "value", expect: true},
+		"empty string":     {value: "", expect: false},
 	}
 
 	for name, test := range tests {
@@ -233,8 +233,8 @@ func Test_FlatMap(t *testing.T) {
 		expect string
 	}{
 		"Just when Function maps to Just":    {value: "value", f: func(string) maybe.Maybe[string] { return maybe.Just("result") }, expect: "result"},
-		"Just when Function maps to Nothing": {f: func(string) maybe.Maybe[string] { return maybe.Nothing[string]() }, expect: "default"},
-		"Nothing always maps to Nothing":     {expect: "default"},
+		"Just when Function maps to Nothing": {value: "value", f: func(string) maybe.Maybe[string] { return maybe.Nothing[string]() }, expect: "default"},
+		"Nothing always maps to Nothing":     {value: "", f: func(string) maybe.Maybe[string] { return maybe.Just("result") }, expect: "default"},
 	}
 
 	for name, test := range tests {
